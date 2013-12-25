@@ -14,7 +14,7 @@ def unregister_loopback_handler(address):
 def _fake_requests_send(self, request, **kwargs):
     url = URL(request.url)
 
-    address = (url.hostname, url.port or 80)
+    address = (url.hostname, url.port or url.default_port)
 
     handler = _registered_addresses.get(address, None)
 
