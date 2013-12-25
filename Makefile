@@ -6,7 +6,7 @@ test: env
 env: .env/.up-to-date
 
 .env/.up-to-date: setup.py Makefile
-	virtualenv .env
+	python -m virtualenv .env
 	.env/bin/pip install -e .
 	.env/bin/pip install nose
 	touch $@

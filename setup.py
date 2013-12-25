@@ -11,6 +11,9 @@ _INSTALL_REQUIERS = [
     "URLObject",
 ]
 
+if sys.version_info < (2, 7):
+    _INSTALL_REQUIERS.append("unittest2")
+
 setup(name="Flask-Loopback",
       classifiers = [
           "Programming Language :: Python :: 2.6",

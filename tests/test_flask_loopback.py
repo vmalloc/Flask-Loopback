@@ -33,7 +33,7 @@ class FlaskLoopbackTest(TestCase):
         self.addCleanup(self._ctx.__exit__, None, None, None)
 
     def test_simple_request(self):
-        self.assertEquals(requests.get(self.root_url.add_path("/sample/url")).content, OK_RESPONSE)
+        self.assertEquals(requests.get(self.root_url.add_path("/sample/url")).content.decode("utf-8"), OK_RESPONSE)
 
     def test_not_found(self):
         response = requests.get(self.root_url.add_path("not_found"))

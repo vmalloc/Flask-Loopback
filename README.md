@@ -34,8 +34,8 @@ When you want to actually use it, you activate the loopback on a specified addre
 >>> loopback = FlaskLoopback(app)
 
 >>> with loopback.on(("some-address.com", 80)):
-...    requests.get("http://some-address.com/some/path").content
-'hello!'
+...    print(requests.get("http://some-address.com/some/path").content.decode("utf-8"))
+hello!
 
 ```
 

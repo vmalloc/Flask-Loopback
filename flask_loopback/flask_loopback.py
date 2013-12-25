@@ -22,7 +22,7 @@ class FlaskLoopback(object):
 
     def handle_request(self, url, request):
         assert url.scheme
-        path = "/{}".format(url.split("/", 3)[-1])
+        path = "/{0}".format(url.split("/", 3)[-1])
         open_kwargs = {"method": request.method.upper(), "headers": iteritems(request.headers), "data": request.body}
         resp = self._test_client.open(path, **open_kwargs)
         returned = requests.Response()
