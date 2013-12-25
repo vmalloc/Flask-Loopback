@@ -1,0 +1,8 @@
+*.pyc
+.vagrant
+*.egg-info
+build
+.tox
+flycheck-*
+dist
+.env
