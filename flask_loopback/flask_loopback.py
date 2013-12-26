@@ -16,17 +16,30 @@ class FlaskLoopback(object):
         self.flask_app = flask_app
         self._test_client = flask_app.test_client()
         self._request_context_handlers = []
+        self._registered_addresses = set()
 
     def register_request_context_handler(self, handler):
         self._request_context_handlers.append(handler)
 
     @contextmanager
     def on(self, address):
-        dispatch.register_loopback_handler(address, self)
+        self.activate_address(address)
         try:
             yield self
         finally:
-            dispatch.unregister_loopback_handler(address)
+            self.deactivate_address(address)
+
+    def activate_address(self, address):
+        dispatch.register_loopback_handler(address, self)
+        self._registered_addresses.add(address)
+
+    def deactivate_address(self, address):
+        dispatch.unregister_loopback_handler(address)
+        self._registered_addresses.remove(address)
+
+    def deactivate_all(self):
+        while self._registered_addresses:
+            self.deactivate_address(next(iter(self._registered_addresses)))
 
     def handle_request(self, url, request):
         assert url.scheme

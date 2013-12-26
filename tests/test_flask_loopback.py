@@ -4,6 +4,7 @@ import flask
 import flask_loopback
 import requests
 from flask_loopback._compat import httplib
+from flask_loopback import dispatch
 from urlobject import URLObject as URL
 
 from . import TestCase
@@ -28,6 +29,27 @@ def create_sample_app():
 
     return returned, l
 
+class FlaskLoopbackActivationTest(TestCase):
+
+    def setUp(self):
+        super(FlaskLoopbackActivationTest, self).setUp()
+        self.app, self.loopback = create_sample_app()
+        self.assertFalse(dispatch._registered_addresses)
+        self.loopback.activate_address(("a.com", 123))
+        self.loopback.activate_address(("b.com", 1234))
+
+    def test_deactivate_one_by_one(self):
+        self.assertEquals(len(dispatch._registered_addresses), 2)
+        self.loopback.deactivate_address(("a.com", 123))
+        self.assertEquals(len(dispatch._registered_addresses), 1)
+        with self.assertRaises(LookupError):
+            self.loopback.deactivate_address(("a.com", 123))
+        self.loopback.deactivate_address(("b.com", 1234))
+        self.assertFalse(dispatch._registered_addresses)
+
+    def test_deactivate_all(self):
+        self.loopback.deactivate_all()
+        self.assertFalse(dispatch._registered_addresses)
 
 class FlaskLoopbackTest(TestCase):
 
