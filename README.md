@@ -35,6 +35,20 @@ hello!
 
 ```
 
+To help you perform more actions before and after requests, you can register request context functions to be called around actual requests (this is in addition to the default handlers provided by Flask):
+
+```python
+>>> from contextlib import contextmanager
+
+>>> @loopback.register_request_context_handler
+... @contextmanager
+... def request_handler(request):
+...     # do something before request handling
+...     yield
+...     # do something after request handling
+
+```
+
 Licence
 =======
 

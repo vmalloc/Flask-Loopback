@@ -14,6 +14,9 @@ _INSTALL_REQUIERS = [
 if sys.version_info < (2, 7):
     _INSTALL_REQUIERS.append("unittest2")
 
+if sys.version_info < (3, 3):
+    _INSTALL_REQUIERS.append("contextlib2")
+
 setup(name="Flask-Loopback",
       classifiers = [
           "Programming Language :: Python :: 2.6",
