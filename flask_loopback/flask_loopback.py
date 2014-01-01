@@ -54,6 +54,7 @@ class FlaskLoopback(object):
             assert returned.url is None
             returned.url = str(url)
             returned.status_code = resp.status_code
+            returned.request = request
             returned._content = resp.get_data()
             returned.headers.update(resp.headers)
             return returned

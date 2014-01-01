@@ -65,10 +65,12 @@ class FlaskLoopbackTest(TestCase):
     def test_simple_request(self):
         self.assertEquals(requests.get(self.root_url.add_path("/sample/url")).content.decode("utf-8"), OK_RESPONSE)
 
-    def test_response_url(self):
+    def test_response_attributes(self):
         url = self.root_url
         response = requests.get(url)
         self.assertEquals(response.url, url)
+        self.assertEquals(response.request.url, url)
+        self.assertEquals(response.request.method, "GET")
 
     def test_not_found(self):
         response = requests.get(self.root_url.add_path("not_found"))
