@@ -51,6 +51,8 @@ class FlaskLoopback(object):
 
             resp = self._test_client.open(path, **open_kwargs)
             returned = requests.Response()
+            assert returned.url is None
+            returned.url = str(url)
             returned.status_code = resp.status_code
             returned._content = resp.get_data()
             returned.headers.update(resp.headers)
