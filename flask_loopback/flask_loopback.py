@@ -1,10 +1,9 @@
 from contextlib import contextmanager
 
-import httplib
 import requests
 
 from . import dispatch
-from ._compat import iteritems
+from ._compat import iteritems, httplib
 
 try:
     from contextlib import ExitStack
