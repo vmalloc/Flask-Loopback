@@ -75,6 +75,7 @@ class FlaskLoopbackTest(TestCase):
     def test_not_found(self):
         response = requests.get(self.root_url.add_path("not_found"))
         self.assertEquals(response.status_code, httplib.NOT_FOUND)
+        self.assertEquals(response.reason, "Not Found")
 
     def test_request_context_handler(self):
         initial_counter = _g_counter

@@ -1,12 +1,16 @@
-import requests
 from contextlib import contextmanager
+
+import httplib
+import requests
+
+from . import dispatch
+from ._compat import iteritems
+
 try:
     from contextlib import ExitStack
 except ImportError:
     from contextlib2 import ExitStack
 
-from . import dispatch
-from ._compat import iteritems
 
 
 class FlaskLoopback(object):
@@ -54,6 +58,7 @@ class FlaskLoopback(object):
             assert returned.url is None
             returned.url = str(url)
             returned.status_code = resp.status_code
+            returned.reason = httplib.responses.get(resp.status_code, None)
             returned.request = request
             returned._content = resp.get_data()
             returned.headers.update(resp.headers)
