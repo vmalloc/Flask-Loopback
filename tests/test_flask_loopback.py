@@ -72,6 +72,9 @@ class FlaskLoopbackTest(TestCase):
         self.assertEquals(response.request.url, url)
         self.assertEquals(response.request.method, "GET")
 
+    def test_https(self):
+        self.assertEquals(requests.get(self.root_url.with_scheme("https").add_path("/sample/url")).content.decode("utf-8"), OK_RESPONSE)
+
     def test_not_found(self):
         response = requests.get(self.root_url.add_path("not_found"))
         self.assertEquals(response.status_code, httplib.NOT_FOUND)
