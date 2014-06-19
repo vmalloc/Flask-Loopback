@@ -17,7 +17,7 @@ if sys.version_info < (2, 7):
 if sys.version_info < (3, 3):
     _INSTALL_REQUIERS.append("contextlib2")
 
-setup(name="Flask-Loopback2",
+setup(name="Flask-Loopback",
       classifiers = [
           "Programming Language :: Python :: 2.6",
           "Programming Language :: Python :: 2.7",
