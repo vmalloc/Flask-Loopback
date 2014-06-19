@@ -20,20 +20,21 @@ class FlaskLoopback(object):
         self._test_client = flask_app.test_client()
         self._request_context_handlers = []
         self._registered_addresses = set()
+        self._use_ssl = {}
 
     def register_request_context_handler(self, handler):
         self._request_context_handlers.append(handler)
 
     @contextmanager
-    def on(self, address):
-        self.activate_address(address)
+    def on(self, address, ssl=False):
+        self.activate_address(address, ssl)
         try:
             yield self
         finally:
             self.deactivate_address(address)
 
-    def activate_address(self, address):
-        dispatch.register_loopback_handler(address, self)
+    def activate_address(self, address, ssl=False):
+        dispatch.register_loopback_handler(address, self, ssl)
         self._registered_addresses.add(address)
 
     def deactivate_address(self, address):

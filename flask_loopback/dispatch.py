@@ -1,10 +1,14 @@
 import requests
+try:
+    from ssl import SSLError
+except ImportError:
+    SSLError = None
 from urlobject import URLObject as URL
 
 _registered_addresses = {}
 
-def register_loopback_handler(address, handler):
-    _registered_addresses[address] = handler
+def register_loopback_handler(address, handler, ssl):
+    _registered_addresses[address] = (handler, ssl)
     _patch_requests_if_needed()
 
 def unregister_loopback_handler(address):
@@ -16,12 +20,20 @@ def _fake_requests_send(self, request, **kwargs):
 
     address = (url.hostname, url.port or url.default_port)
 
-    handler = _registered_addresses.get(address, None)
+    handler, ssl = _registered_addresses.get(address, (None, None))
 
-    if handler is not None:
-        return handler.handle_request(url, request)
+    if handler is None:
+        return _orig_session_send(self, request, **kwargs)
 
-    return _orig_session_send(self, request, **kwargs)
+    request_is_ssl = url.scheme == "https"
+    if request_is_ssl and not ssl:
+        if SSLError is None:
+            raise NotImplementedError() # pragma: no cover
+        raise SSLError()
+    if not request_is_ssl and ssl:
+        raise requests.ConnectionError()
+
+    return handler.handle_request(url, request)
 
 _requests_patched = False
 _orig_session_send = None

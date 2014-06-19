@@ -49,6 +49,25 @@ To help you perform more actions before and after requests, you can register req
 
 ```
 
+SSL
+===
+
+SSL is disabled by default, but you can easily activate it:
+
+```python
+>>> with loopback.on(("some-address.localdomain", 443)):
+...    requests.get("https://some-address.localdomain/some/path") # doctest: +IGNORE_EXCEPTION_DETAIL
+Traceback (most recent call last):
+	...
+SSLError
+>>> with loopback.on(("some-address.localdomain", 443), ssl=True):
+...    requests.get("https://some-address.localdomain/some/path") # doctest: +IGNORE_EXCEPTION_DETAIL
+<Response [200]>
+
+```
+
+
+
 Licence
 =======
 
