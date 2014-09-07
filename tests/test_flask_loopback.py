@@ -1,10 +1,11 @@
+import socket
 from contextlib import contextmanager
 
 import flask
 import flask_loopback
 import requests
-from flask_loopback._compat import httplib
 from flask_loopback import dispatch
+from flask_loopback._compat import httplib
 from urlobject import URLObject as URL
 
 from . import TestCase
@@ -24,6 +25,10 @@ def create_sample_app():
         global _g_counter
         _g_counter += 1
         return flask.jsonify({"result": _g_counter})
+
+    @returned.route('/remote_addr')
+    def get_remote_addr():
+        return flask.jsonify({'result': flask.request.remote_addr})
 
     l = flask_loopback.FlaskLoopback(returned)
 
@@ -71,6 +76,11 @@ class FlaskLoopbackTest(TestCase):
         self.assertEquals(response.url, url)
         self.assertEquals(response.request.url, url)
         self.assertEquals(response.request.method, "GET")
+
+    def test_remote_addr(self):
+        response = requests.get(self.root_url.add_path('remote_addr'))
+        response.raise_for_status()
+        assert response.json()['result'] == socket.getfqdn()
 
     def test_not_found(self):
         response = requests.get(self.root_url.add_path("not_found"))

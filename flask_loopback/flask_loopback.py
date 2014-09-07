@@ -1,9 +1,10 @@
+import socket
 from contextlib import contextmanager
 
 import requests
 
 from . import dispatch
-from ._compat import iteritems, httplib
+from ._compat import httplib, iteritems
 
 try:
     from contextlib import ExitStack
@@ -48,7 +49,10 @@ class FlaskLoopback(object):
     def handle_request(self, url, request):
         assert url.scheme
         path = "/{0}".format(url.split("/", 3)[-1])
-        open_kwargs = {"method": request.method.upper(), "headers": iteritems(request.headers), "data": request.body}
+        open_kwargs = {
+            'method': request.method.upper(), 'headers': iteritems(request.headers), 'data': request.body,
+            'environ_base': {'REMOTE_ADDR': _get_hostname()},
+        }
         with ExitStack() as stack:
             for handler in self._request_context_handlers:
                 stack.enter_context(handler(request))
@@ -63,3 +67,11 @@ class FlaskLoopback(object):
             returned._content = resp.get_data()
             returned.headers.update(resp.headers)
             return returned
+
+_hostname = None
+
+def _get_hostname():
+    global _hostname
+    if _hostname is None:
+        _hostname = socket.getfqdn()
+    return _hostname
