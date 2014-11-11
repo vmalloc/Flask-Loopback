@@ -35,10 +35,12 @@ class FlaskLoopback(object):
             self.deactivate_address(address)
 
     def activate_address(self, address, ssl=False):
+        assert isinstance(address, tuple) and len(address) == 2, 'Address must be a tuple of the form (host, port)'
         dispatch.register_loopback_handler(address, self, ssl)
         self._registered_addresses.add(address)
 
     def deactivate_address(self, address):
+        assert isinstance(address, tuple) and len(address) == 2, 'Address must be a tuple of the form (host, port)'
         dispatch.unregister_loopback_handler(address)
         self._registered_addresses.remove(address)
 
