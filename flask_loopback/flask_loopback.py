@@ -54,6 +54,7 @@ class FlaskLoopback(object):
         open_kwargs = {
             'method': request.method.upper(), 'headers': iteritems(request.headers), 'data': request.body,
             'environ_base': {'REMOTE_ADDR': _get_hostname()},
+            'base_url': '{0.scheme}://{0.netloc}'.format(url),
         }
         with ExitStack() as stack:
             for handler in self._request_context_handlers:

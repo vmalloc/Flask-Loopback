@@ -1,7 +1,9 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_loopback import FlaskLoopback
 
 import pytest
+
+from urlobject import URLObject as URL
 
 
 @pytest.fixture
@@ -23,6 +25,12 @@ def app():
             "result": True,
             })
 
+    @returned.route('/request_vars')
+    def get_request_vars():
+        return jsonify(dict(
+            (name, getattr(request, name))
+            for name in ['host']))
+
     return FlaskLoopback(returned)
 
 @pytest.fixture
@@ -37,3 +45,8 @@ def non_ssl_port():
 def hostname():
     return "some-nonexistant-hostname.localdomain"
 
+@pytest.fixture(params=[True, False])
+def url(request, hostname, ssl_port, non_ssl_port):
+    with_ssl = request.param
+
+    return URL('http{0}://{1}:{2}'.format('s' if with_ssl else '', hostname, ssl_port if with_ssl else non_ssl_port))
