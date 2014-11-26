@@ -9,6 +9,7 @@ from flask_loopback._compat import httplib
 from urlobject import URLObject as URL
 
 from . import TestCase
+from flask_loopback.flask_loopback import CustomHTTPResponse
 
 OK_RESPONSE = "ok!"
 _g_counter = 0
@@ -102,6 +103,18 @@ class FlaskLoopbackTest(TestCase):
         self.assertEquals(_g_counter, initial_counter + 3)
         self.assertEquals(returned, initial_counter + 2)
 
+    def test_request_context_handler_custom_response(self):
+        initial_counter = _g_counter
+
+        @self.loopback.register_request_context_handler
+        @contextmanager
+        def return_custom_code(request):
+            raise CustomHTTPResponse(request, 666)
+
+        response = requests.get(self.root_url.add_path("increase_counter"))
+        assert response.status_code == 666
+        self.assertEquals(_g_counter, initial_counter)
+        self.assertIsNone(response.content)
 
 
 def _url(address):

@@ -12,6 +12,15 @@ except ImportError:
     from contextlib2 import ExitStack
 
 
+class CustomHTTPResponse(Exception):
+    def __init__(self, request, code):
+        super(CustomHTTPResponse, self).__init__()
+        self.response = requests.Response()
+        self.response.url = str(request.url)
+        self.response.status_code = code
+        self.response.reason = httplib.responses.get(code, None)
+        self.response.request = request
+
 
 class FlaskLoopback(object):
 
@@ -58,7 +67,10 @@ class FlaskLoopback(object):
         }
         with ExitStack() as stack:
             for handler in self._request_context_handlers:
-                stack.enter_context(handler(request))
+                try:
+                    stack.enter_context(handler(request))
+                except CustomHTTPResponse as e:
+                    return e.response
 
             resp = self._test_client.open(path, **open_kwargs)
             returned = requests.Response()
