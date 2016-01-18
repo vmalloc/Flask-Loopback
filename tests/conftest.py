@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, g
 from flask_loopback import FlaskLoopback
 
 import pytest
@@ -37,6 +37,24 @@ def app():
         returned = jsonify({})
         returned.set_cookie('x', value='y')
         return returned
+
+    @returned.route('/set_cookie_on_after_request')
+    def set_cookie_on_after_request():
+        g.cookies.append(('x', 'y'))
+        return jsonify({})
+
+    @returned.before_request
+    def before():
+        g.cookies = []
+
+    @returned.after_request
+    def after_request(response):
+        cookies = getattr(g, 'cookies', [])
+        while cookies:
+            response.set_cookie(*cookies.pop())
+
+        return response
+
 
     return FlaskLoopback(returned)
 
