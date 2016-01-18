@@ -2,6 +2,7 @@ import socket
 from contextlib import contextmanager
 
 import requests
+from requests.cookies import MockRequest
 
 from . import dispatch
 from ._compat import httplib, iteritems
@@ -81,7 +82,23 @@ class FlaskLoopback(object):
             returned.request = request
             returned._content = resp.get_data()
             returned.headers.update(resp.headers)
+            returned.cookies.extract_cookies(_MockResponse(resp), MockRequest(request))
             return returned
+
+class _MockResponse(object):
+
+    def __init__(self, flask_client_response):
+        super(_MockResponse, self).__init__()
+        self._resp = flask_client_response
+
+    def info(self):
+        return self
+
+    def getheaders(self, name):
+        returned = self._resp.headers.get(name.lower())
+        if returned is not None:
+            return [returned]
+        return []
 
 _hostname = None
 

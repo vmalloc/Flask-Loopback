@@ -31,6 +31,13 @@ def app():
             (name, getattr(request, name))
             for name in ['host']))
 
+
+    @returned.route('/set_cookie')
+    def set_cookie():
+        returned = jsonify({})
+        returned.set_cookie('x', value='y')
+        return returned
+
     return FlaskLoopback(returned)
 
 @pytest.fixture
