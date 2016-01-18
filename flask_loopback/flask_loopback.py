@@ -100,6 +100,10 @@ class _MockResponse(object):
             return [returned]
         return []
 
+    def get_all(self, name, default=None):
+        return self.getheaders(name) or default
+
+
 _hostname = None
 
 def _get_hostname():
