@@ -2,7 +2,7 @@ import socket
 from contextlib import contextmanager
 
 import requests
-from requests.cookies import MockRequest
+from requests.cookies import MockRequest, extract_cookies_to_jar
 
 from . import dispatch
 from ._compat import httplib, iteritems
@@ -58,7 +58,7 @@ class FlaskLoopback(object):
         while self._registered_addresses:
             self.deactivate_address(next(iter(self._registered_addresses)))
 
-    def handle_request(self, url, request):
+    def handle_request(self, session, url, request):
         assert url.scheme
         path = "/{0}".format(url.split("/", 3)[-1])
         open_kwargs = {
@@ -80,10 +80,17 @@ class FlaskLoopback(object):
             returned.status_code = resp.status_code
             returned.reason = httplib.responses.get(resp.status_code, None)
             returned.request = request
-            returned._content = resp.get_data()
+            returned._content = resp.get_data() # pylint: disable=protected-access
             returned.headers.update(resp.headers)
-            returned.cookies.extract_cookies(_MockResponse(resp), MockRequest(request))
+            self._extract_cookies(session, request, resp, returned)
             return returned
+
+    def _extract_cookies(self, session, request, raw_response, response):
+        mocked_response = _MockResponse(raw_response)
+        mocked_request = MockRequest(request)
+        for obj in (response, session):
+            obj.cookies.extract_cookies(mocked_response, mocked_request)
+
 
 class _MockResponse(object):
 

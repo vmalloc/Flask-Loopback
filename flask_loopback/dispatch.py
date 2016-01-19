@@ -33,7 +33,7 @@ def _fake_requests_send(self, request, **kwargs):
     if not request_is_ssl and ssl:
         raise requests.ConnectionError()
 
-    return handler.handle_request(url, request)
+    return handler.handle_request(self, url, request)
 
 _requests_patched = False
 _orig_session_send = None
