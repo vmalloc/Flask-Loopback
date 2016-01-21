@@ -12,6 +12,14 @@ def test_cookies(active_app, url, path, with_session):
         resp = session.get(url)
     else:
         resp = requests.get(url)
+    resp.raise_for_status()
     assert resp.cookies['x'] == 'y'
     if with_session:
         assert session.cookies['x'] == 'y'
+
+
+def test_client_forgets_cookies(active_app, url):
+    resp = requests.get(url.add_path('set_cookie'))
+    resp.raise_for_status()
+
+    requests.get(url.add_path('assert_no_cookies')).raise_for_status()

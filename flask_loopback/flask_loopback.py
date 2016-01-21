@@ -73,6 +73,7 @@ class FlaskLoopback(object):
                 except CustomHTTPResponse as e:
                     return e.response
 
+            self._test_client.cookie_jar.clear()
             resp = self._test_client.open(path, **open_kwargs)
             returned = requests.Response()
             assert returned.url is None

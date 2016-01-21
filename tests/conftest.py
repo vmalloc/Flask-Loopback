@@ -38,6 +38,12 @@ def app():
         returned.set_cookie('x', value='y')
         return returned
 
+    @returned.route('/assert_no_cookies')
+    def assert_no_cookies():
+        assert not request.cookies
+        return jsonify({"result": "ok"})
+
+
     @returned.route('/set_cookie_on_after_request')
     def set_cookie_on_after_request():
         g.cookies.append(('x', 'y'))
