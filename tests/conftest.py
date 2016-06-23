@@ -1,8 +1,8 @@
-from flask import Flask, jsonify, request, g
-from flask_loopback import FlaskLoopback
+import hashlib
 
 import pytest
-
+from flask import Flask, g, jsonify, request
+from flask_loopback import FlaskLoopback
 from urlobject import URLObject as URL
 
 
@@ -20,34 +20,39 @@ def app():
     returned = Flask(__name__)
 
     @returned.route("/echo", methods=["post"])
-    def echo():
+    def echo():                 # pylint: disable=unused-variable
         return jsonify({
             "result": True,
             })
 
     @returned.route('/request_vars')
-    def get_request_vars():
+    def get_request_vars():     # pylint: disable=unused-variable
         return jsonify(dict(
             (name, getattr(request, name))
             for name in ['host']))
 
 
     @returned.route('/set_cookie')
-    def set_cookie():
+    def set_cookie():           # pylint: disable=unused-variable
         returned = jsonify({})
         returned.set_cookie('x', value='y')
         return returned
 
     @returned.route('/assert_no_cookies')
-    def assert_no_cookies():
+    def assert_no_cookies():    # pylint: disable=unused-variable
         assert not request.cookies
         return jsonify({"result": "ok"})
 
 
     @returned.route('/set_cookie_on_after_request')
-    def set_cookie_on_after_request():
+    def set_cookie_on_after_request(): # pylint: disable=unused-variable
         g.cookies.append(('x', 'y'))
         return jsonify({})
+
+    @returned.route('/stream_upload', methods=['POST'])
+    def stream_upload():        # pylint: disable=unused-variable
+        return hashlib.sha512(request.stream.read()).hexdigest()
+
 
     @returned.before_request
     def before():

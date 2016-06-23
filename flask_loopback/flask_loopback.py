@@ -61,8 +61,11 @@ class FlaskLoopback(object):
     def handle_request(self, session, url, request):
         assert url.scheme
         path = "/{0}".format(url.split("/", 3)[-1])
+        request_data = request.body
+        if hasattr(request_data, 'read'):
+            request_data = request_data.read()
         open_kwargs = {
-            'method': request.method.upper(), 'headers': iteritems(request.headers), 'data': request.body,
+            'method': request.method.upper(), 'headers': iteritems(request.headers), 'data': request_data,
             'environ_base': {'REMOTE_ADDR': _get_hostname()},
             'base_url': '{0.scheme}://{0.netloc}'.format(url),
         }
@@ -81,7 +84,8 @@ class FlaskLoopback(object):
             returned.status_code = resp.status_code
             returned.reason = httplib.responses.get(resp.status_code, None)
             returned.request = request
-            returned._content = resp.get_data() # pylint: disable=protected-access
+            resp_data = resp.get_data()
+            returned._content = resp_data # pylint: disable=protected-access
             returned.headers.update(resp.headers)
             self._extract_cookies(session, request, resp, returned)
             return returned
