@@ -2,7 +2,7 @@ import socket
 from contextlib import contextmanager
 
 import requests
-from requests.cookies import MockRequest, extract_cookies_to_jar
+from requests.cookies import MockRequest
 
 from . import dispatch
 from ._compat import httplib, iteritems
@@ -115,7 +115,7 @@ class _MockResponse(object):
 _hostname = None
 
 def _get_hostname():
-    global _hostname
+    global _hostname            # pylint: disable=global-statement
     if _hostname is None:
         _hostname = socket.getfqdn()
     return _hostname
