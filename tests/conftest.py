@@ -1,7 +1,8 @@
+import gzip
 import hashlib
 
 import pytest
-from flask import Flask, g, jsonify, request
+from flask import Flask, g, jsonify, request, Response
 from flask_loopback import FlaskLoopback
 from urlobject import URLObject as URL
 
@@ -52,6 +53,11 @@ def app():
     @returned.route('/stream_upload', methods=['POST'])
     def stream_upload():        # pylint: disable=unused-variable
         return hashlib.sha512(request.stream.read()).hexdigest()
+
+    @returned.route('/compressed')
+    def compressed():        # pylint: disable=unused-variable
+        orig = 'uncompressed!'.encode('utf-8')
+        return Response(gzip.compress(orig), headers={'Content-Encoding': 'gzip'})
 
 
     @returned.before_request
