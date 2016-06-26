@@ -1,4 +1,3 @@
-import gzip
 import socket
 from contextlib import contextmanager
 
@@ -6,7 +5,7 @@ import requests
 from requests.cookies import MockRequest
 
 from . import dispatch
-from ._compat import httplib, iteritems
+from ._compat import httplib, iteritems, gzip_decompress
 
 try:
     from contextlib import ExitStack
@@ -87,7 +86,7 @@ class FlaskLoopback(object):
             returned.request = request
             resp_data = resp.get_data()
             if resp.headers.get('content-encoding') == 'gzip':
-                resp_data = gzip.decompress(resp_data)
+                resp_data = gzip_decompress(resp_data)
             returned._content = resp_data # pylint: disable=protected-access
             returned.headers.update(resp.headers)
             self._extract_cookies(session, request, resp, returned)

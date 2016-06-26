@@ -4,6 +4,7 @@ import hashlib
 import pytest
 from flask import Flask, g, jsonify, request, Response
 from flask_loopback import FlaskLoopback
+from flask_loopback._compat import gzip_compress
 from urlobject import URLObject as URL
 
 
@@ -57,7 +58,7 @@ def app():
     @returned.route('/compressed')
     def compressed():        # pylint: disable=unused-variable
         orig = 'uncompressed!'.encode('utf-8')
-        return Response(gzip.compress(orig), headers={'Content-Encoding': 'gzip'})
+        return Response(gzip_compress(orig), headers={'Content-Encoding': 'gzip'})
 
 
     @returned.before_request
