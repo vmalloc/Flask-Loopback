@@ -25,7 +25,7 @@ When you want to actually use it, you activate the loopback on a specified addre
 
 ```python
 >>> import requests
->>> from flask.ext.loopback import FlaskLoopback
+>>> from flask_loopback import FlaskLoopback
 
 >>> loopback = FlaskLoopback(app)
 
