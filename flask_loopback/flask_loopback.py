@@ -88,7 +88,7 @@ class FlaskLoopback(object):
             if resp.headers.get('content-encoding') == 'gzip':
                 resp_data = gzip_decompress(resp_data)
             returned._content = resp_data # pylint: disable=protected-access
-            returned.headers.update(resp.headers)
+            returned.headers.update(resp.headers.items())
             self._extract_cookies(session, request, resp, returned)
             return returned
 
