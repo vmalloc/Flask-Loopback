@@ -7,3 +7,4 @@ flycheck-*
 dist
 .env
 /.cache
+/.pytest_cache
