@@ -14,7 +14,8 @@ deploy:
   provider: pypi
   user: vmalloc
   password:
-    secure: cASAX1V/ZKuy6lZGNP4cNuGigwZifnRGV3rVG5RIf+lqC6gSFb4R68kNKcrpK8xHG8wEH/PCgwy4zsMuLMWyX7zPmGiN2hZyYShIsapNnftqrwnzVbxMjwOVf4RiDVjkwqvDtGGpE8OnbXwzhZY8a9GSRm/iXpICFWLR8kzVEQg=
+    secure: EWAh6AP6k6poYDyFNv9NamA7oGcxvphtsjuRXbm6XrEb+/cgAaCbcvjVa0bK5apd/CEFNPDFLK05D4Tf4NWgRsapQasGDtBaLqfX8QgmDB37ydIN70urnqfwj6qJKW8eIqr8FijZ2YuHTJl6Mf74emaQy3vFiFluMiZbqqwFCw8=
   on:
     tags: true
+    python: '3.6'
     repo: vmalloc/Flask-Loopback
