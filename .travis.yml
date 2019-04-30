@@ -11,11 +11,16 @@ install:
 script:
 - make test
 deploy:
-  provider: pypi
-  user: vmalloc
-  password:
-    secure: EWAh6AP6k6poYDyFNv9NamA7oGcxvphtsjuRXbm6XrEb+/cgAaCbcvjVa0bK5apd/CEFNPDFLK05D4Tf4NWgRsapQasGDtBaLqfX8QgmDB37ydIN70urnqfwj6qJKW8eIqr8FijZ2YuHTJl6Mf74emaQy3vFiFluMiZbqqwFCw8=
+  provider: script
+  script:
+    - pip install -U twine
+    - twine upload . -r -u $PYPI_USERNAME -p $PYPI_PASSWORD
   on:
-    tags: true
+    #tags: true
+    branch: hotfix/1.4.7
     python: '3.6'
     repo: vmalloc/Flask-Loopback
+env:
+  global:
+    - secure: lEbSeRzRmrdmduGG4IpiS29ceV2DU0pwNsdl+riytAEqxMXywceCKdy4cdvsswnWcbSuLCEzam0kg0sxVLgFOIVxHy65fkuoiowHKLvnxc3eZBaYE8zprzP7JzmIhyHAedJj0W6Iqj+mkU1DMJYiIcGtGBsKPwNjlUfJo67GA38=
+    - secure: ZNdeb9jIR5SzlWnnUEVwp+oJ5G1Nccj6Fs9M36HWoIEOYhxADGjdT3mOq/Kxoi6ZlBf5NnWkR8LUeFnmt9lqCjPlnJyfZuj7OEO49CkFAxZJb0Q9zOmXeDfEm9BmFPVqzhJJ8UacuMRh1Pv1hfVxjTXeIjYRiraH+1dOQtfnPOc=
