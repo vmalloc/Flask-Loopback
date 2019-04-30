@@ -77,6 +77,8 @@ class FlaskLoopback(object):
                     return e.response
 
             self._test_client.cookie_jar.clear()
+            for cookie in request._cookies:
+                self._test_client.cookie_jar.set_cookie(cookie)
             resp = self._test_client.open(path, **open_kwargs)
             returned = requests.Response()
             assert returned.url is None
