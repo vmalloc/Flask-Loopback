@@ -1,7 +1,8 @@
 default: test
 
 test: env
-	.env/bin/py.test tests
+	.env/bin/pytest tests
+	.env/bin/pylint --rcfile .pylintrc flask_loopback tests setup.py
 
 env: .env/.up-to-date
 
