@@ -77,7 +77,7 @@ class FlaskLoopback(object):
                     return e.response
 
             self._test_client.cookie_jar.clear()
-            for cookie in request._cookies:
+            for cookie in request._cookies:  # pylint: disable=protected-access
                 self._test_client.cookie_jar.set_cookie(cookie)
             resp = self._test_client.open(path, **open_kwargs)
             returned = requests.Response()

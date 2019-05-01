@@ -15,6 +15,7 @@ OK_RESPONSE = "ok!"
 _g_counter = 0
 
 def create_sample_app():
+    # pylint: disable=unused-variable
     returned = flask.Flask(__name__)
 
     @returned.route("/sample/url")
@@ -36,6 +37,7 @@ def create_sample_app():
     return returned, l
 
 class FlaskLoopbackActivationTest(TestCase):
+    # pylint: disable=protected-access
 
     def setUp(self):
         super(FlaskLoopbackActivationTest, self).setUp()
@@ -45,9 +47,9 @@ class FlaskLoopbackActivationTest(TestCase):
         self.loopback.activate_address(("b.com", 1234))
 
     def test_deactivate_one_by_one(self):
-        self.assertEquals(len(dispatch._registered_addresses), 2)
+        self.assertEqual(len(dispatch._registered_addresses), 2)
         self.loopback.deactivate_address(("a.com", 123))
-        self.assertEquals(len(dispatch._registered_addresses), 1)
+        self.assertEqual(len(dispatch._registered_addresses), 1)
         with self.assertRaises(LookupError):
             self.loopback.deactivate_address(("a.com", 123))
         self.loopback.deactivate_address(("b.com", 1234))
@@ -65,18 +67,18 @@ class FlaskLoopbackTest(TestCase):
         self.address = ("somehost.com", 1234)
         self.root_url = _url(self.address)
         self._ctx = self.loopback.on(self.address)
-        ctx_result = self._ctx.__enter__()
+        ctx_result = self._ctx.__enter__()  # pylint: disable=unused-variable
         self.addCleanup(self._ctx.__exit__, None, None, None)
 
     def test_simple_request(self):
-        self.assertEquals(requests.get(self.root_url.add_path("/sample/url")).content.decode("utf-8"), OK_RESPONSE)
+        self.assertEqual(requests.get(self.root_url.add_path("/sample/url")).content.decode("utf-8"), OK_RESPONSE)
 
     def test_response_attributes(self):
         url = self.root_url
         response = requests.get(url)
-        self.assertEquals(response.url, url)
-        self.assertEquals(response.request.url, url)
-        self.assertEquals(response.request.method, "GET")
+        self.assertEqual(response.url, url)
+        self.assertEqual(response.request.url, url)
+        self.assertEqual(response.request.method, "GET")
 
     def test_remote_addr(self):
         response = requests.get(self.root_url.add_path('remote_addr'))
@@ -85,35 +87,35 @@ class FlaskLoopbackTest(TestCase):
 
     def test_not_found(self):
         response = requests.get(self.root_url.add_path("not_found"))
-        self.assertEquals(response.status_code, httplib.NOT_FOUND)
-        self.assertEquals(response.reason, "Not Found")
+        self.assertEqual(response.status_code, httplib.NOT_FOUND)
+        self.assertEqual(response.reason, "Not Found")
 
     def test_request_context_handler(self):
         initial_counter = _g_counter
 
         @self.loopback.register_request_context_handler
         @contextmanager
-        def increase_counter(request):
+        def increase_counter(request):  # pylint: disable=unused-argument,unused-variable
             global _g_counter
             _g_counter += 1
             yield
             _g_counter += 1
 
         returned = requests.get(self.root_url.add_path("increase_counter")).json()["result"]
-        self.assertEquals(_g_counter, initial_counter + 3)
-        self.assertEquals(returned, initial_counter + 2)
+        self.assertEqual(_g_counter, initial_counter + 3)
+        self.assertEqual(returned, initial_counter + 2)
 
     def test_request_context_handler_custom_response(self):
         initial_counter = _g_counter
 
         @self.loopback.register_request_context_handler
         @contextmanager
-        def return_custom_code(request):
+        def return_custom_code(request):  # pylint: disable=unused-variable
             raise CustomHTTPResponse(request, 666)
 
         response = requests.get(self.root_url.add_path("increase_counter"))
         assert response.status_code == 666
-        self.assertEquals(_g_counter, initial_counter)
+        self.assertEqual(_g_counter, initial_counter)
         self.assertIsNone(response.content)
 
 

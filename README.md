@@ -1,4 +1,4 @@
-![Build Status] (https://secure.travis-ci.org/vmalloc/Flask-Loopback.png ) &nbsp; ![Version] (https://img.shields.io/pypi/v/Flask-Loopback.svg )
+![Build Status](https://secure.travis-ci.org/vmalloc/Flask-Loopback.png) &nbsp; ![Version](https://img.shields.io/pypi/v/Flask-Loopback.svg)
 
 Overview
 ========
