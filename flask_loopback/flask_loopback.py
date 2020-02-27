@@ -97,7 +97,7 @@ class FlaskLoopback(object):
         with ExitStack() as stack:
             for handler in self._request_context_handlers:
                 try:
-                    stack.enter_context(handler(request))
+                    stack.enter_context(handler(request))  # pylint: disable=no-member
                 except CustomHTTPResponse as e:
                     return e.response
 
