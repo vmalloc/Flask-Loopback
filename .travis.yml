@@ -19,3 +19,4 @@ deploy:
     tags: true
     python: '3.6'
     repo: vmalloc/Flask-Loopback
+    python: "3.6"

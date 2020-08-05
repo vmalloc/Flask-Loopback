@@ -2,7 +2,9 @@ import socket
 from contextlib import contextmanager
 
 import requests
+import six
 from requests.cookies import MockRequest
+from urllib3 import HTTPResponse
 
 from . import dispatch
 from ._compat import httplib, iteritems, gzip_decompress
@@ -21,6 +23,29 @@ class CustomHTTPResponse(Exception):
         self.response.status_code = code
         self.response.reason = httplib.responses.get(code, None)
         self.response.request = request
+
+
+class _IOReader(six.BytesIO):
+    """A reader that makes a BytesIO look like a HTTPResponse.
+    A HTTPResponse will return an empty string when you read from it after
+    the socket has been closed. A BytesIO will raise a ValueError. For
+    compatibility we want to do the same thing a HTTPResponse does.
+    """
+
+    def read(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        if self.closed:
+            return six.b('')
+
+        # not a new style object in python 2
+        result = six.BytesIO.read(self, *args, **kwargs)
+
+        # when using resp.iter_content(None) it'll go through a different
+        # request path in urllib3. This path checks whether the object is
+        # marked closed instead of the return value. see gh124.
+        if result == six.b(''):
+            self.close()
+
+        return result
 
 
 class FlaskLoopback(object):
@@ -72,12 +97,12 @@ class FlaskLoopback(object):
         with ExitStack() as stack:
             for handler in self._request_context_handlers:
                 try:
-                    stack.enter_context(handler(request))
+                    stack.enter_context(handler(request))  # pylint: disable=no-member
                 except CustomHTTPResponse as e:
                     return e.response
 
             self._test_client.cookie_jar.clear()
-            for cookie in request._cookies:
+            for cookie in request._cookies:  # pylint: disable=protected-access
                 self._test_client.cookie_jar.set_cookie(cookie)
             resp = self._test_client.open(path, **open_kwargs)
             returned = requests.Response()
@@ -89,8 +114,16 @@ class FlaskLoopback(object):
             resp_data = resp.get_data()
             if resp.headers.get('content-encoding') == 'gzip':
                 resp_data = gzip_decompress(resp_data)
-            returned._content = resp_data # pylint: disable=protected-access
+            returned._content = resp_data  # pylint: disable=protected-access
             returned.headers.update(resp.headers.items())
+            returned.raw = HTTPResponse(
+                status=returned.status_code,
+                reason=returned.reason,
+                headers=returned.headers,
+                body=_IOReader(resp_data) or _IOReader(six.b('')),
+                decode_content=False,
+                preload_content=False,
+            )
             self._extract_cookies(session, request, resp, returned)
             return returned
 
@@ -122,8 +155,9 @@ class _MockResponse(object):
 
 _hostname = None
 
+
 def _get_hostname():
-    global _hostname            # pylint: disable=global-statement
+    global _hostname  # pylint: disable=global-statement
     if _hostname is None:
         _hostname = socket.getfqdn()
     return _hostname

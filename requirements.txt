@@ -1,0 +1,6 @@
+requests
+Flask
+URLObject
+
+unittest2; python_version<'2.7'
+contextlib2; python_version<'3.3'

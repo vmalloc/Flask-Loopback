@@ -1,8 +1,8 @@
-import gzip
 import hashlib
+import os
 
 import pytest
-from flask import Flask, g, jsonify, request, Response
+from flask import Flask, g, jsonify, request, Response, send_file
 from flask_loopback import FlaskLoopback
 from flask_loopback._compat import gzip_compress
 from urlobject import URLObject as URL
@@ -65,6 +65,14 @@ def app():
     def compressed():  # pylint: disable=unused-variable
         orig = "uncompressed!".encode("utf-8")
         return Response(gzip_compress(orig), headers={"Content-Encoding": "gzip"})
+
+    @returned.route("/files/binary")
+    def binary_file():  # pylint: disable=unused-variable
+        return send_file(os.path.join(os.path.dirname(__file__), "files", "binary"))
+
+    @returned.route("/files/text")
+    def text_file():  # pylint: disable=unused-variable
+        return send_file(os.path.join(os.path.dirname(__file__), "files", "text"))
 
     @returned.before_request
     def before():  # pylint: disable=unused-variable

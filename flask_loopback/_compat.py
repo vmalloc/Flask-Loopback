@@ -1,3 +1,4 @@
+# pylint: disable=import-error,unused-import
 from contextlib import contextmanager
 import gzip
 import sys
